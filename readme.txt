@@ -1,11 +1,11 @@
 === apLists ===
-Contributors: artistprowp
 Tags: email list, subscribers, newsletter, double opt-in, consent
 Requires at least: 6.4
-Tested up to: 6.8
+Tested up to: 7.1
 Requires PHP: 8.0
 Stable tag: 1.0.2
-License: Commercial
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Own your WordPress subscriber lists with consent evidence, double opt-in, segmentation, suppression, CSV import/export, and one-click unsubscribe.
 
@@ -24,13 +24,13 @@ apLists is a first-party subscriber list workspace for WordPress. Build unlimite
 * Portable CSV export
 * Bounce and complaint data foundation
 * Optional apForms, apCampaign, and apCRM connections
-* Commercial license activation and automatic updates
+* Free plugin functionality with optional paid implementation and support
 
 == Installation ==
 
 1. Upload the apLists ZIP through Plugins > Add New > Upload Plugin.
 2. Activate apLists.
-3. Open apLists > License and activate your artistproWP license.
+3. No license key is required for plugin functionality.
 4. Open apLists > Getting Started.
 5. Create a list and publish its shortcode on a page.
 
@@ -52,10 +52,15 @@ No. Suppression protection blocks accidental resubscription until an administrat
 
 Your installed plugin and subscriber data continue working. Renewal covers updates and support.
 
+== Paid support ==
+
+Optional implementation and support are available at https://artistprowp.com/support/. Purchasing support is not required to use the plugin. No license server or private update service is contacted by this directory build.
+
 == Changelog ==
 
 = 1.0.2 =
-* Prevented public opt-in bypass and forged source attribution; hardened subscriber filtering and CSV import.
+* Prepared WordPress.org distribution without a private updater or paid activation.
+* Updated licensing metadata and release documentation.
 
 
 = 1.0.1 =
