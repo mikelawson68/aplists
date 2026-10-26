@@ -3,7 +3,7 @@ Tags: email list, subscribers, newsletter, double opt-in, consent
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,6 +57,10 @@ Your installed plugin and subscriber data continue working. Renewal covers updat
 Optional implementation and support are available at https://artistprowp.com/support/. Purchasing support is not required to use the plugin. No license server or private update service is contacted by this directory build.
 
 == Changelog ==
+
+= 1.0.3 =
+* Export all subscribers in bounded batches, including lists larger than 2,000.
+* Keep concurrent new signups for the next export.
 
 = 1.0.2 =
 * Prepared WordPress.org distribution without a private updater or paid activation.
