@@ -132,6 +132,7 @@ final class APLists_Lifecycle
         foreach (self::export_subscribers($list_id) as $row) {
             fputcsv($out, [$row['email'],$row['first_name'],$row['last_name'],$row['status'],$row['source'],$row['consent_at'],$row['confirmed_at'],$row['unsubscribed_at']], ',', '"', '');
         }
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Close the CSV response stream, not a filesystem path.
         fclose($out);
         exit;
     }
