@@ -4,7 +4,7 @@ Tags: email list, subscribers, newsletter, double opt-in, consent
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 8.0
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 
 Own your WordPress subscriber lists with consent evidence, double opt-in, segmentation, suppression, CSV import/export, and one-click unsubscribe.

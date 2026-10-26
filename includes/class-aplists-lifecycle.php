@@ -98,7 +98,43 @@ final class APLists_Lifecycle
         update_option('aplists_last_import', ['processed'=>$processed, 'errors'=>$errors, 'at'=>current_time('mysql')], false);
         $this->redirect('aplists-import', 'imported');
     }
-    public function export(): void { $this->post_guard('aplists_export',false);$list_id=absint($_GET['list_id']??0);$list=self::list_by_id($list_id);if(!$list)wp_die('List not found.');$rows=self::subscribers($list_id);nocache_headers();header('Content-Type:text/csv; charset=utf-8');header('Content-Disposition:attachment; filename="'.sanitize_file_name($list['name']).'-subscribers.csv"');$out=fopen('php://output','w');fputcsv($out,['email','first_name','last_name','status','source','consent_at','confirmed_at','unsubscribed_at']);foreach($rows as $row)fputcsv($out,[$row['email'],$row['first_name'],$row['last_name'],$row['status'],$row['source'],$row['consent_at'],$row['confirmed_at'],$row['unsubscribed_at']]);fclose($out);exit; }
+    /** Stream a bounded snapshot without inheriting the admin-screen row limit. */
+    public static function export_subscribers(int $list_id): Generator
+    {
+        global $wpdb;
+        $t = APLists_Schema::tables();
+        $last_id = (int) $wpdb->get_var($wpdb->prepare("SELECT MAX(id) FROM %i WHERE list_id=%d", $t['subscribers'], $list_id));
+        $cursor = 0;
+        while ($cursor < $last_id) {
+            $rows = $wpdb->get_results($wpdb->prepare(
+                "SELECT id,email,first_name,last_name,status,source,consent_at,confirmed_at,unsubscribed_at FROM %i WHERE list_id=%d AND id>%d AND id<=%d ORDER BY id ASC LIMIT 500",
+                $t['subscribers'], $list_id, $cursor, $last_id
+            ), ARRAY_A);
+            if (!$rows) { break; }
+            foreach ($rows as $row) {
+                $cursor = (int) $row['id'];
+                yield $row;
+            }
+        }
+    }
+
+    public function export(): void
+    {
+        $this->post_guard('aplists_export', false);
+        $list_id = absint($_GET['list_id'] ?? 0);
+        $list = self::list_by_id($list_id);
+        if (!$list) { wp_die('List not found.'); }
+        nocache_headers();
+        header('Content-Type:text/csv; charset=utf-8');
+        header('Content-Disposition:attachment; filename="' . sanitize_file_name($list['name']) . '-subscribers.csv"');
+        $out = fopen('php://output', 'w');
+        fputcsv($out, ['email','first_name','last_name','status','source','consent_at','confirmed_at','unsubscribed_at'], ',', '"', '');
+        foreach (self::export_subscribers($list_id) as $row) {
+            fputcsv($out, [$row['email'],$row['first_name'],$row['last_name'],$row['status'],$row['source'],$row['consent_at'],$row['confirmed_at'],$row['unsubscribed_at']], ',', '"', '');
+        }
+        fclose($out);
+        exit;
+    }
 
     public function shortcode($atts): string { $atts=shortcode_atts(['list'=>'0','title'=>'Join our list','button'=>'Subscribe'],$atts,'aplists_subscribe');$list=self::list_by_id(absint($atts['list']));if(!$list)return '';wp_enqueue_style('aplists-public',plugin_dir_url(APLISTS_FILE).'assets/aplists.css',[],APLISTS_VERSION);$status=sanitize_key($_GET['aplists_status']??'');ob_start();?><section class="aplists-form-shell"><h2><?php echo esc_html($atts['title']);?></h2><?php if($status):?><p class="aplists-form-message"><?php echo esc_html($status==='check-email'?'Check your email to confirm your subscription.':($status==='subscribed'?'You are subscribed.':'Your request could not be completed.'));?></p><?php endif;?><form method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><input type="hidden" name="action" value="aplists_subscribe"><input type="hidden" name="list_id" value="<?php echo (int)$list['id'];?>"><?php wp_nonce_field('aplists_subscribe_'.$list['id']);?><p class="aplists-hp"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></p><div class="aplists-name-row"><label>First name<input name="first_name" autocomplete="given-name"></label><label>Last name<input name="last_name" autocomplete="family-name"></label></div><label>Email address<input required type="email" name="email" autocomplete="email"></label><label class="aplists-consent"><input required type="checkbox" name="consent" value="1"> I agree to receive email from <?php echo esc_html(get_bloginfo('name'));?>. I can unsubscribe at any time.</label><button type="submit"><?php echo esc_html($atts['button']);?></button></form></section><?php return (string)ob_get_clean(); }
     public function subscribe(): void { $list_id=absint($_POST['list_id']??0);if(!wp_verify_nonce((string)($_POST['_wpnonce']??''),'aplists_subscribe_'.$list_id)||!empty($_POST['website'])||empty($_POST['consent']))$this->public_redirect('error');$data=wp_unslash($_POST);$r=self::upsert_subscriber($list_id,['email'=>$data['email']??'', 'first_name'=>$data['first_name']??'', 'last_name'=>$data['last_name']??'', 'source'=>'public_form', 'ip'=>wp_unslash($_SERVER['REMOTE_ADDR']??'')]);if(empty($r['success']))$this->public_redirect('error');if(($r['status']??'')==='pending'){$url=add_query_arg(['aplists_confirm'=>$r['confirmation_token']],home_url('/'));wp_mail(sanitize_email($data['email']),'Confirm your subscription',"Confirm your subscription:\n\n".$url."\n\nIf you did not request this, ignore this email.");$this->public_redirect('check-email');}$this->public_redirect('subscribed'); }
