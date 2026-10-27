@@ -4,7 +4,7 @@ Tags: email list, subscribers, newsletter, double opt-in, consent
 Requires at least: 6.4
 Tested up to: 6.8
 Requires PHP: 8.0
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 
 Own your WordPress subscriber lists with consent evidence, double opt-in, segmentation, suppression, CSV import/export, and one-click unsubscribe.
@@ -53,6 +53,9 @@ No. Suppression protection blocks accidental resubscription until an administrat
 Your installed plugin and subscriber data continue working. Renewal covers updates and support.
 
 == Changelog ==
+
+= 1.0.4 =
+* Protect paid installations from conflicting WordPress.org update offers.
 
 = 1.0.2 =
 * Prevented public opt-in bypass and forged source attribution; hardened subscriber filtering and CSV import.
