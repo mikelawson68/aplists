@@ -1,7 +1,15 @@
 # apLists 1.0.3
 
-Prepared community release. WordPress.org review is pending. Do not claim directory approval before acceptance.
+Community release under GPLv2 or later. Standalone plugin functionality is included without paid activation or a private update client.
 
-The release includes standalone plugin functionality under GPLv2 or later. The community ZIP excludes the retail update client. See the getting-started guide and README for installation and optional support.
+## Install
 
-Publisher checklist: select the reviewed community branch as the public-facing default; include README, CONTRIBUTING and SECURITY files; scan full publishable Git history; attach the verified community ZIP and its SHA-256; retain the retail release and private commercial operations separately. Do not publish internal release notes or credentials. Never tag a retail commit as a community release.
+Download `aplists-1.0.3-community.zip` from this release. In WordPress, use Plugins → Add New → Upload Plugin, install the ZIP and activate apLists. A license key is not required for this community build.
+
+## Optional updates and support
+
+[Buy annual updates and support](https://artistprowp.com/checkout/?product=aplists&plan=annual&sites=1) — $59 for one site. [Compare all plans](https://artistprowp.com/aplists/) or [contact support](https://artistprowp.com/support/).
+
+The paid plan provides the retail package with automatic update access and one year of support. Installed plugin functionality remains usable when paid service expires. Community releases are available here for manual installation.
+
+WordPress.org submission is pending maintainer account access and directory review. This GitHub release does not imply directory approval.
