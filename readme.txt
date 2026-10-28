@@ -29,7 +29,7 @@ apLists is a first-party subscriber list workspace for WordPress. Build unlimite
 == Installation ==
 
 1. Upload the apLists ZIP through Plugins > Add New > Upload Plugin.
-2. Activate apLists.
+2. If another apLists edition is active, deactivate it before activating this edition. Your lists and subscribers remain in your database.
 3. No license key is required for plugin functionality.
 4. Open apLists > Getting Started.
 5. Create a list and publish its shortcode on a page.
