@@ -3,7 +3,7 @@
  * Plugin Name: apLists
  * Plugin URI: https://artistprowp.com/aplists/
  * Description: Own your WordPress subscriber lists with consent records, double opt-in, segmentation, suppression, CSV import/export, and one-click unsubscribe.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Requires at least: 6.4
  * Requires PHP: 8.0
  * Author: artistproWP
