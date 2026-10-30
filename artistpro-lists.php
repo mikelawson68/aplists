@@ -35,7 +35,7 @@ if ($aplists_existing_edition) {
     return;
 }
 
-define('APLISTS_VERSION', '1.0.3');
+define('APLISTS_VERSION', '1.0.4');
 define('APLISTS_FILE', __FILE__);
 define('APLISTS_PATH', plugin_dir_path(__FILE__));
 

@@ -58,6 +58,9 @@ Optional implementation and support are available at https://artistprowp.com/sup
 
 == Changelog ==
 
+= 1.0.4 =
+* Improve request validation and input sanitization.
+
 = 1.0.3 =
 * Export all subscribers in bounded batches, including lists larger than 2,000.
 * Keep concurrent new signups for the next export.
