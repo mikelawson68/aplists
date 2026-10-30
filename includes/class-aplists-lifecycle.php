@@ -118,6 +118,13 @@ final class APLists_Lifecycle
         }
     }
 
+    /** Prevent spreadsheet applications from interpreting exported text as formulas. */
+    public static function csv_safe_cell($value): string
+    {
+        $value = (string) $value;
+        return preg_match('/^[\s\x00-\x1f]*[=+@-]/u', $value) ? "'" . $value : $value;
+    }
+
     public function export(): void
     {
         $this->guard();check_admin_referer('aplists_export');
@@ -130,7 +137,7 @@ final class APLists_Lifecycle
         $out = fopen('php://output', 'w');
         fputcsv($out, ['email','first_name','last_name','status','source','consent_at','confirmed_at','unsubscribed_at'], ',', '"', '');
         foreach (self::export_subscribers($list_id) as $row) {
-            fputcsv($out, [$row['email'],$row['first_name'],$row['last_name'],$row['status'],$row['source'],$row['consent_at'],$row['confirmed_at'],$row['unsubscribed_at']], ',', '"', '');
+            fputcsv($out, array_map([self::class, 'csv_safe_cell'], [$row['email'],$row['first_name'],$row['last_name'],$row['status'],$row['source'],$row['consent_at'],$row['confirmed_at'],$row['unsubscribed_at']]), ',', '"', '');
         }
         // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Close the CSV response stream, not a filesystem path.
         fclose($out);
