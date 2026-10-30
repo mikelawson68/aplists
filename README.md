@@ -14,7 +14,7 @@ WordPress 6.4 or later; PHP 8.0 or later. Tested on WordPress 6.4 and 7.1.3 with
 
 ## Installation
 
-Use a packaged release ZIP, not GitHub's source-code ZIP. In WordPress, choose Plugins → Add New → Upload Plugin, upload the release ZIP, then activate apLists. Community users can skip the license-activation step in the guide. See the [getting-started guide](https://artistprowp.com/docs/aplists-getting-started/).
+Use a packaged release ZIP, not GitHub's source-code ZIP. Back up your site first. If an older community or paid apLists edition is active, deactivate it before activating this community edition. The community package uses the `artistpro-lists` plugin folder; older community and paid packages use `aplists`, so WordPress may install it as a separate plugin rather than offer to replace the old one. Keep the site database and verify your lists and subscribers after activation. Community users do not need a license key. See the [getting-started guide](https://artistprowp.com/docs/aplists-getting-started/).
 
 The community distribution does not require a license key and does not contact a private licensing or update service. The retail distribution includes the commercial update client; activate its service key under apLists → License.
 
@@ -24,7 +24,7 @@ The plugin is GPLv2 or later. Paid plans at [artistproWP](https://artistprowp.co
 
 ## Moving from the community edition to a paid plan
 
-After purchasing, download the retail ZIP and find your service key in [My Account](https://artistprowp.com/my-account/). Back up your site. In WordPress choose Plugins → Add New → Upload Plugin, select the retail ZIP and choose **Replace current with uploaded** when prompted. Activate the key under apLists → License. Existing plugin data remains in your WordPress database. [See support instructions](https://artistprowp.com/support/).
+After purchasing, download the retail ZIP and find your service key in [My Account](https://artistprowp.com/my-account/). Back up your site and database. Deactivate the community edition before activating the retail edition; they share classes and cannot run together. Upload the retail ZIP through Plugins → Add New. If an older `aplists` folder is already installed, WordPress may offer to replace that older folder; it will not replace the differently named `artistpro-lists` folder. Activate the retail plugin and then your key under apLists → License. Your existing lists and subscribers remain in the database; verify them after the switch. [See support instructions](https://artistprowp.com/support/).
 
 ## Help and contributions
 

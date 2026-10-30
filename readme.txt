@@ -59,7 +59,7 @@ Optional implementation and support are available at https://artistprowp.com/sup
 == Changelog ==
 
 = 1.0.5 =
-* Initialize network sites safely when apLists is network activated.
+* Initialize network sites safely when apLists is network activated, and retry incomplete table creation.
 
 = 1.0.4 =
 * Improve request validation and input sanitization.

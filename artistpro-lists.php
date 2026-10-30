@@ -44,7 +44,7 @@ require_once APLISTS_PATH . 'includes/class-aplists-schema.php';
 require_once APLISTS_PATH . 'includes/class-aplists-lifecycle.php';
 require_once APLISTS_PATH . 'includes/class-aplists-cli.php';
 
-register_activation_hook(__FILE__, ['APLists_Schema', 'install']);
+register_activation_hook(__FILE__, ['APLists_Schema', 'activate']);
 
 // On a network, activation runs only for the current site. Provision an
 // existing site when it first loads, and provision newly initialized sites.
@@ -69,8 +69,10 @@ add_action('wp_initialize_site', static function ($site) use ($aplists_network_a
 }, 20);
 
 add_action('plugins_loaded', static function () use ($aplists_network_active): void {
-    if ($aplists_network_active() && get_option('aplists_version', false) === false) {
-        APLists_Schema::install();
+    if ($aplists_network_active() && get_option('aplists_version', false) === false && !APLists_Schema::install()) {
+        add_action('admin_notices', static function (): void {
+            if (current_user_can('manage_options')) echo '<div class="notice notice-error"><p>' . esc_html__('apLists could not create its database tables. Check database permissions; it will retry on the next request.', 'artistpro-lists') . '</p></div>';
+        });
     }
     APLists_Lifecycle::instance()->boot();
 });

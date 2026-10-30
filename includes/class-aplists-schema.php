@@ -26,7 +26,14 @@ final class APLists_Schema
         ];
     }
 
-    public static function install(): void
+    public static function activate(): void
+    {
+        if (!self::install()) {
+            wp_die(esc_html__('apLists could not create its database tables. Check database permissions and try activating again.', 'artistpro-lists'), '', ['response' => 500]);
+        }
+    }
+
+    public static function install(): bool
     {
         global $wpdb;
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -192,7 +199,14 @@ KEY status (status)
         foreach ($sql as $statement) {
             dbDelta($statement);
         }
+        // Do not mark an incomplete installation as ready. The network
+        // initializer can retry on a later request after the host is repaired.
+        foreach ($t as $table) {
+            $found = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+            if ($found !== $table) return false;
+        }
         update_option('aplists_version', APLISTS_VERSION, false);
         add_option('aplists_installed', time());
+        return true;
     }
 }
