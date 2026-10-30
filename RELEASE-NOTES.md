@@ -1,15 +1,15 @@
-# apLists 1.0.3
+# apLists 1.0.6
 
-Community release under GPLv2 or later. Standalone plugin functionality is included without paid activation or a private update client.
+The free community edition provides subscriber lists, consent records, double opt-in, segmentation, suppression, and CSV import and export. It is GPLv2 or later and does not require a license key.
 
-## Install
+This release improves network installation and retries missing database table creation, including on older sites incorrectly marked as installed. CSV exports handle spreadsheet formula-like values safely.
 
-Download `aplists-1.0.3-community.zip` from this release. In WordPress, use Plugins → Add New → Upload Plugin, install the ZIP and activate apLists. A license key is not required for this community build.
+## Installation
 
-## Optional updates and support
+Download the packaged `artistpro-lists-1.0.6-community.zip` release asset. Back up your site and database. If an older community or paid apLists edition is active, deactivate it before activating this edition. The new package uses the `artistpro-lists` folder; older and paid editions use `aplists`, so WordPress may install it separately. Verify your lists and subscribers after the change. See the [installation guide](https://artistprowp.com/docs/aplists-getting-started/).
 
-[Buy annual updates and support](https://artistprowp.com/checkout/?product=aplists&plan=annual&sites=1) — $59 for one site. [Compare all plans](https://artistprowp.com/aplists/) or [contact support](https://artistprowp.com/support/).
+## Updates and support
 
-The paid plan provides the retail package with automatic update access and one year of support. Installed plugin functionality remains usable when paid service expires. Community releases are available here for manual installation.
+[Buy one year of updates and support](https://artistprowp.com/checkout/?product=aplists&plan=annual&sites=1) or [compare plans](https://artistprowp.com/aplists/). The paid package includes automatic update access and support for the plan period. The installed plugin continues to work after paid service expires. Community releases can be installed manually.
 
-WordPress.org submission is pending maintainer account access and directory review. This GitHub release does not imply directory approval.
+The WordPress.org submission remains under review; this release does not imply directory approval.

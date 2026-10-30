@@ -23,4 +23,3 @@ try {
     if (!APLists_Schema::ensure() || !get_option($marker, false)) throw new Exception('Retry failed');
     echo "PASS failed legacy repair remains unverified and successful retry marks verified\n";
 } finally { restore_current_blog(); }
-
