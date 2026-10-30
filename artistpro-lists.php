@@ -52,24 +52,24 @@ $aplists_network_active = static function (): bool {
     return is_multisite() && isset(get_site_option('active_sitewide_plugins', [])[plugin_basename(APLISTS_FILE)]);
 };
 add_action('switch_blog', static function ($new_blog_id, $previous_blog_id, $context) use ($aplists_network_active): void {
-    if ($context !== 'switch' || !$aplists_network_active() || get_option('aplists_version', false) !== false) return;
+    if ($context !== 'switch' || !$aplists_network_active()) return;
     global $wpdb;
     // Core may switch to a new site before its options table exists.
     $options_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($wpdb->options)));
-    if ($options_table === $wpdb->options) APLists_Schema::install();
+    if ($options_table === $wpdb->options) APLists_Schema::ensure();
 }, 10, 3);
 add_action('wp_initialize_site', static function ($site) use ($aplists_network_active): void {
     if (!$aplists_network_active() || empty($site->blog_id)) return;
     switch_to_blog((int) $site->blog_id);
     try {
-        if (get_option('aplists_version', false) === false) APLists_Schema::install();
+        APLists_Schema::ensure();
     } finally {
         restore_current_blog();
     }
 }, 20);
 
 add_action('plugins_loaded', static function () use ($aplists_network_active): void {
-    if ($aplists_network_active() && get_option('aplists_version', false) === false && !APLists_Schema::install()) {
+    if (!APLists_Schema::ensure()) {
         add_action('admin_notices', static function (): void {
             if (current_user_can('manage_options')) echo '<div class="notice notice-error"><p>' . esc_html__('apLists could not create its database tables. Check database permissions; it will retry on the next request.', 'artistpro-lists') . '</p></div>';
         });

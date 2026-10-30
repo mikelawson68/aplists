@@ -26,6 +26,19 @@ final class APLists_Schema
         ];
     }
 
+    /** Verify legacy installations once per site; retry incomplete schemas safely. */
+    public static function ensure(): bool
+    {
+        if (get_option('aplists_schema_verified_105', false)) return true;
+        global $wpdb;
+        foreach (self::tables() as $table) {
+            $found = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+            if ($found !== $table) return self::install();
+        }
+        update_option('aplists_schema_verified_105', '1', false);
+        return true;
+    }
+
     public static function activate(): void
     {
         if (!self::install()) {
@@ -205,6 +218,7 @@ KEY status (status)
             $found = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
             if ($found !== $table) return false;
         }
+        update_option('aplists_schema_verified_105', '1', false);
         update_option('aplists_version', APLISTS_VERSION, false);
         add_option('aplists_installed', time());
         return true;
