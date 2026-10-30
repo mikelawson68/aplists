@@ -3,7 +3,7 @@
  * Plugin Name: apLists
  * Plugin URI: https://artistprowp.com/aplists/
  * Description: Own your WordPress subscriber lists with consent records, double opt-in, segmentation, suppression, CSV import/export, and one-click unsubscribe.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Requires at least: 6.4
  * Requires PHP: 8.0
  * Author: artistproWP
@@ -35,7 +35,7 @@ if ($aplists_existing_edition) {
     return;
 }
 
-define('APLISTS_VERSION', '1.0.4');
+define('APLISTS_VERSION', '1.0.5');
 define('APLISTS_FILE', __FILE__);
 define('APLISTS_PATH', plugin_dir_path(__FILE__));
 
@@ -46,6 +46,31 @@ require_once APLISTS_PATH . 'includes/class-aplists-cli.php';
 
 register_activation_hook(__FILE__, ['APLists_Schema', 'install']);
 
-add_action('plugins_loaded', static function (): void {
+// On a network, activation runs only for the current site. Provision an
+// existing site when it first loads, and provision newly initialized sites.
+$aplists_network_active = static function (): bool {
+    return is_multisite() && isset(get_site_option('active_sitewide_plugins', [])[plugin_basename(APLISTS_FILE)]);
+};
+add_action('switch_blog', static function ($new_blog_id, $previous_blog_id, $context) use ($aplists_network_active): void {
+    if ($context !== 'switch' || !$aplists_network_active() || get_option('aplists_version', false) !== false) return;
+    global $wpdb;
+    // Core may switch to a new site before its options table exists.
+    $options_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($wpdb->options)));
+    if ($options_table === $wpdb->options) APLists_Schema::install();
+}, 10, 3);
+add_action('wp_initialize_site', static function ($site) use ($aplists_network_active): void {
+    if (!$aplists_network_active() || empty($site->blog_id)) return;
+    switch_to_blog((int) $site->blog_id);
+    try {
+        if (get_option('aplists_version', false) === false) APLists_Schema::install();
+    } finally {
+        restore_current_blog();
+    }
+}, 20);
+
+add_action('plugins_loaded', static function () use ($aplists_network_active): void {
+    if ($aplists_network_active() && get_option('aplists_version', false) === false) {
+        APLists_Schema::install();
+    }
     APLists_Lifecycle::instance()->boot();
 });
