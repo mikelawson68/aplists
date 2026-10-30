@@ -3,7 +3,7 @@ Tags: email list, subscribers, newsletter, double opt-in, consent
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,6 +57,9 @@ Your installed plugin and subscriber data continue working. Renewal covers updat
 Optional implementation and support are available at https://artistprowp.com/support/. Purchasing support is not required to use the plugin. No license server or private update service is contacted by this directory build.
 
 == Changelog ==
+
+= 1.0.6 =
+* Recover older installations with missing database tables while preserving existing data.
 
 = 1.0.5 =
 * Initialize network sites safely when apLists is network activated, and retry incomplete table creation.
