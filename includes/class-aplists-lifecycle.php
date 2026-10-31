@@ -104,12 +104,14 @@ final class APLists_Lifecycle
         global $wpdb;
         $t = APLists_Schema::tables();
         $last_id = (int) $wpdb->get_var($wpdb->prepare("SELECT MAX(id) FROM %i WHERE list_id=%d", $t['subscribers'], $list_id));
+        if ($wpdb->last_error !== '') throw new RuntimeException('Could not read subscriber export.');
         $cursor = 0;
         while ($cursor < $last_id) {
             $rows = $wpdb->get_results($wpdb->prepare(
                 "SELECT id,email,first_name,last_name,status,source,consent_at,confirmed_at,unsubscribed_at FROM %i WHERE list_id=%d AND id>%d AND id<=%d ORDER BY id ASC LIMIT 500",
                 $t['subscribers'], $list_id, $cursor, $last_id
             ), ARRAY_A);
+            if ($wpdb->last_error !== '' || !is_array($rows)) throw new RuntimeException('Could not read subscriber export.');
             if (!$rows) { break; }
             foreach ($rows as $row) {
                 $cursor = (int) $row['id'];
@@ -131,15 +133,24 @@ final class APLists_Lifecycle
         $list_id = absint($_GET['list_id'] ?? 0);
         $list = self::list_by_id($list_id);
         if (!$list) { wp_die('List not found.'); }
+        $out = fopen('php://temp/maxmemory:2097152', 'w+');
+        if ($out === false) wp_die('Could not prepare subscriber export. Please try again.', 'apLists', ['response'=>500]);
+        try {
+            if (fputcsv($out, ['email','first_name','last_name','status','source','consent_at','confirmed_at','unsubscribed_at'], ',', '"', '') === false) throw new RuntimeException('CSV write failed.');
+            foreach (self::export_subscribers($list_id) as $row) {
+                if (fputcsv($out, array_map([self::class, 'csv_safe_cell'], [$row['email'],$row['first_name'],$row['last_name'],$row['status'],$row['source'],$row['consent_at'],$row['confirmed_at'],$row['unsubscribed_at']]), ',', '"', '') === false) throw new RuntimeException('CSV write failed.');
+            }
+            if (!rewind($out)) throw new RuntimeException('CSV rewind failed.');
+        } catch (Throwable $e) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Close the temporary stream on failure.
+            fclose($out);
+            wp_die('Could not prepare subscriber export. Please try again.', 'apLists', ['response'=>500]);
+        }
         nocache_headers();
         header('Content-Type:text/csv; charset=utf-8');
         header('Content-Disposition:attachment; filename="' . sanitize_file_name($list['name']) . '-subscribers.csv"');
-        $out = fopen('php://output', 'w');
-        fputcsv($out, ['email','first_name','last_name','status','source','consent_at','confirmed_at','unsubscribed_at'], ',', '"', '');
-        foreach (self::export_subscribers($list_id) as $row) {
-            fputcsv($out, array_map([self::class, 'csv_safe_cell'], [$row['email'],$row['first_name'],$row['last_name'],$row['status'],$row['source'],$row['consent_at'],$row['confirmed_at'],$row['unsubscribed_at']]), ',', '"', '');
-        }
-        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Close the CSV response stream, not a filesystem path.
+        fpassthru($out);
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Close the temporary CSV response stream.
         fclose($out);
         exit;
     }
