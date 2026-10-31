@@ -4,7 +4,13 @@ declare(strict_types=1);
 if (!defined('ABSPATH')) { exit; }
 final class APLists_CLI
 {
-    public function install(): void { APLists_Schema::install();WP_CLI::success('apLists schema installed.'); }
+    public function install(): void {
+        if (!APLists_Schema::install()) {
+            WP_CLI::error("apLists could not create all database tables. Check database permissions and try again.");
+            return;
+        }
+        WP_CLI::success("apLists schema installed.");
+    }
     public function counts(): void { global $wpdb;$counts=[];foreach(APLists_Schema::tables() as $key=>$table)$counts[$key]=(int)$wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM %i",$table));WP_CLI::line((string)wp_json_encode($counts)); }
     public function smoke_lifecycle(): void
     {
